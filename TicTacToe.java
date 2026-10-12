@@ -1,15 +1,20 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.Queue;
 import javax.swing.*;
 
 public class TicTacToe extends JFrame implements ActionListener {
     private JButton[][] buttons = new JButton[3][3];
     private boolean giliranX = true;
     private JLabel statusLabel;
+    
+    private Queue<JButton> langkahX = new LinkedList<>();
+    private Queue<JButton> langkahO = new LinkedList<>();
 
     public TicTacToe() {
-        setTitle("Game Tic-Tac-Toe");
+        setTitle("Game Tic-Tac-Toe (Tanpa Seri)");
         setSize(400, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -46,19 +51,30 @@ public class TicTacToe extends JFrame implements ActionListener {
         if (giliranX) {
             buttonDiklik.setText("X");
             buttonDiklik.setForeground(Color.BLUE);
+            langkahX.add(buttonDiklik);
+            
+            if (langkahX.size() > 3) {
+                JButton tombolLama = langkahX.poll();
+                tombolLama.setText("");
+            }
+            
             statusLabel.setText("Giliran Pemain: O");
         } else {
             buttonDiklik.setText("O");
             buttonDiklik.setForeground(Color.RED);
+            langkahO.add(buttonDiklik);
+            
+            if (langkahO.size() > 3) {
+                JButton tombolLama = langkahO.poll();
+                tombolLama.setText("");
+            }
+            
             statusLabel.setText("Giliran Pemain: X");
         }
 
         if (cekMenang()) {
             String pemenang = giliranX ? "X" : "O";
             JOptionPane.showMessageDialog(this, "Selamat! Pemain " + pemenang + " Menang!");
-            resetPapan();
-        } else if (cekSeri()) {
-            JOptionPane.showMessageDialog(this, "Permainan Seri!");
             resetPapan();
         } else {
             giliranX = !giliranX;
@@ -89,21 +105,15 @@ public class TicTacToe extends JFrame implements ActionListener {
         return false;
     }
 
-    private boolean cekSeri() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (buttons[i][j].getText().equals("")) return false;
-            }
-        }
-        return true;
-    }
-
     private void resetPapan() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 buttons[i][j].setText("");
             }
         }
+        langkahX.clear();
+        langkahO.clear();
+        
         giliranX = true;
         statusLabel.setText("Giliran Pemain: X");
     }
